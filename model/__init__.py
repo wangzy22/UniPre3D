@@ -1,0 +1,3 @@
+from .gaussian_predictor import GaussianSplatPredictor
+from .point_predictor import PointFeaturePredictor
+from .image_predictor import ImageFeaturePredictor

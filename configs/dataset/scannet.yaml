@@ -1,0 +1,10 @@
+# @package _global_
+data:
+  znear: 0.5
+  zfar: 2
+  category: scannet
+  white_background: true
+  use_neighbor_imgs: true
+  use_self_supervise: false
+  supervised_max_distance: 5
+  dataset_root: /path/to/scannet/dataset

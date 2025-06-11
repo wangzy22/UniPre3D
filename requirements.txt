@@ -1,0 +1,15 @@
+diffusers==0.33.1
+transformers==4.52.4
+scipy==1.15.3
+numpy==1.26.4
+pillow==11.2.1
+tqdm==4.67.1
+einops==0.8.1
+h5py==3.13.0
+matplotlib==3.10.3
+scikit-learn==1.6.1
+wandb==0.19.11
+hydra-core==1.3.2
+omegaconf==2.3.0
+chamfer==2.0.0
+emd-ext==0.0.0

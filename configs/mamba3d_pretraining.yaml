@@ -1,0 +1,36 @@
+# configs/ptv3_pretraining.yaml
+defaults:
+  - /settings@_here_  # Superimpose the basic settings
+  - /dataset/shapenet@_here_  # Superimpose the dataset settings
+
+general:
+  cuda: true
+  device: 0
+  random_seed: 42
+
+data:
+  fov: 49.13434264120263
+  training_resolution: 128
+  input_images: 1
+
+model:
+  backbone_type: mamba3d
+  in_channels: 3
+  aug: true
+
+opt:
+  iterations: 100000
+  mode: "train"
+  # use ShapeNet dataset
+  level: "object"
+  use_fusion: true
+  base_lr: 0.0001
+  step_lr_at: 20000
+  batch_size: 32
+  test_generation_num: 1
+  loss: focal_l2
+  non_bg_color_loss_rate: 4
+  bg_color_loss_rate: 1
+  step_lr: 20000
+  lr_gamma: 0.8
+  start_lpips_after: 50000

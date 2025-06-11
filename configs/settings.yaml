@@ -1,0 +1,34 @@
+---
+defaults:
+  - wandb: defaults
+  - hydra: defaults
+  - cam_embd: defaults
+  - _self_
+opt:
+  betas:
+    - 0.9
+    - 0.999
+  imgs_per_obj: 4
+  ema: 
+    use: true
+    update_every: 10
+    update_after_step: 100
+    beta: 0.9999
+  lambda_lpips: 0.01
+  pretrained_ckpt: null
+
+  # Saves all image tensors in the memory when training. More memory-consuming but faster.
+  record_img: true 
+
+model:
+  max_sh_degree: 1
+  offset_scale: 1.0
+  isotropic: false
+
+logging:
+  ckpt_iterations: 2000
+  val_log: 2000
+  loss_log: 10
+  loop_log: 2000
+  render_log: 2000
+  centered: true
