@@ -10,7 +10,6 @@ This document provides detailed instructions for preparing the datasets used in 
 - [ScanNet v2](#scannet-v2)
   - [Download and Preparation](#download-and-preparation)
   - [Dataset Structure](#scannet-dataset-structure)
-- [Acknowledgements](#acknowledgements)
 
 ## ShapeNet-Multiview Dataset 🖼️ (For Object-level Pretraining) <a id="shapenet-multiview-dataset"></a>
 

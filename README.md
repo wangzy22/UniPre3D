@@ -161,6 +161,7 @@ Coming soon...
 We evaluate the effectiveness of UniPre3D on various object-level downstream tasks, including:
 - Semantic Segmentation
 - Instance Segmentation
+- 3D Object Detection
 
 ### Model Zoo (Pretrained Checkpoints)
 
