@@ -54,7 +54,7 @@ Below is visualization of UniPre3D pre-training outputs. The first row presents 
     - [Finetune on Object-level Downstream Tasks 🎯](#finetune-object)
     - [Model Zoo (Pretrained Checkpoints)](#model-zoo-pretrained-checkpoints)
 3. [Scene-level Pretraining 🏠](#scene-level-pretraining-setup)
-    - [Usage](#usage-1)
+    - [Usage(Coming soon...)](#usage-1)
     - [Finetune on Scene-level Downstream Tasks 🎯(Coming soon...)](#finetune-scene)
     - [Model Zoo (Pretrained Checkpoints)(Coming soon...)](#model-zoo-pretrained-checkpoints-1)
 4. [Acknowledgements 🙏](#acknowledgements)
@@ -129,8 +129,7 @@ We evaluate the effectiveness of UniPre3D on various object-level downstream tas
 We provide pretrained models and checkpoints for object-level tasks in the following table:
 | Model | Pretrained Checkpoint | Downstream Task | Performance | Finetuning Logs |
 |-------|------------------------|------------------|---------------|-----------|
-| Standard Transformer | [Baidu Disk](https://pan.baidu.com/s/1jtepDicFhptP3VDsd00T0g?pwd=gmaw)<br>[Google Drive](https://drive.google.com/drive/folders/1MIHC1oMtcjeBPUaOwtF08t0P0ZcpH-zQ?usp=drive_link
-) | Classification | 87.93% Acc<br>(+10.69%) | [Logs](https://drive.google.com/drive/folders/1Tzd6pvZ-ADwctMg6MwrJJMbwFDlwXfb-?usp=drive_link) |
+| Standard Transformer | [Baidu Disk](https://pan.baidu.com/s/1jtepDicFhptP3VDsd00T0g?pwd=gmaw)<br>[Google Drive](https://drive.google.com/drive/folders/1MIHC1oMtcjeBPUaOwtF08t0P0ZcpH-zQ?usp=drive_link) | Classification | 87.93% Acc<br>(+10.69%) | [Logs](https://drive.google.com/drive/folders/1Tzd6pvZ-ADwctMg6MwrJJMbwFDlwXfb-?usp=drive_link) |
 | PointMLP | [Baidu Disk](https://pan.baidu.com/s/1jtepDicFhptP3VDsd00T0g?pwd=gmaw)<br>[Google Drive](https://drive.google.com/drive/folders/1MIHC1oMtcjeBPUaOwtF08t0P0ZcpH-zQ?usp=drive_link)  | Classification | 89.5% Acc<br>(+2.1%) | [Logs](https://drive.google.com/drive/folders/1Tzd6pvZ-ADwctMg6MwrJJMbwFDlwXfb-?usp=drive_link) |
 | Point Cloud Mamba| [Baidu Disk](https://pan.baidu.com/s/1jtepDicFhptP3VDsd00T0g?pwd=gmaw)<br>[Google Drive](https://drive.google.com/drive/folders/1MIHC1oMtcjeBPUaOwtF08t0P0ZcpH-zQ?usp=drive_link) | Classification | 89.0% Acc<br>(+0.9%) | [Logs](https://drive.google.com/drive/folders/1Tzd6pvZ-ADwctMg6MwrJJMbwFDlwXfb-?usp=drive_link) |
 | Mamba3D  | [Baidu Disk](https://pan.baidu.com/s/1jtepDicFhptP3VDsd00T0g?pwd=gmaw)<br>[Google Drive](https://drive.google.com/drive/folders/1MIHC1oMtcjeBPUaOwtF08t0P0ZcpH-zQ?usp=drive_link) | Classification | 93.4% Acc<br>(+0.8%) | [Logs](https://drive.google.com/drive/folders/1Tzd6pvZ-ADwctMg6MwrJJMbwFDlwXfb-?usp=drive_link) |
