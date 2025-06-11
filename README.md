@@ -180,7 +180,7 @@ We would like to express our gratitude to
 - [PointCloudMamba](https://github.com/SkyworkAI/PointCloudMamba)
 - [Mamba3D](https://github.com/xhanxu/Mamba3D)
 
-For any questions about data preparation, please feel free to open an issue in our repository.
+For any questions about data preparation, please feel free to open an issue in our repository or send email to 1302821779@qq.com
 
 ## Citation 📚 <a id="cite"></a>
 
