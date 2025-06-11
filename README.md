@@ -176,6 +176,8 @@ We would like to express our gratitude to
 - [Splatter Image](https://github.com/szymanowiczs/splatter-image)
 - [ShapeNet](https://shapenet.org/)
 - [ScanNet](http://www.scan-net.org/)
+- [PointCloudMamba](https://github.com/SkyworkAI/PointCloudMamba)
+- [Mamba3D](https://github.com/xhanxu/Mamba3D)
 
 For any questions about data preparation, please feel free to open an issue in our repository.
 
