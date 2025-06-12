@@ -5,7 +5,7 @@ Created by [Ziyi Wang*](https://wangzy22.github.io/), [Yanran Zhang*](https://gi
 
 This repository is an official implementation of **UniPre3D (CVPR 2025)**.
 
-**[[Paper](https://openaccess.thecvf.com/content/CVPR2025/papers/Wang_UniPre3D_Unified_Pre-training_of_3D_Point_Cloud_Models_with_Cross-Modal_CVPR_2025_paper.pdf)]** | **[[Project Page](https://ivg-yanranzhang.github.io/UniPre3D/)]**
+**[Paper](https://openaccess.thecvf.com/content/CVPR2025/papers/Wang_UniPre3D_Unified_Pre-training_of_3D_Point_Cloud_Models_with_Cross-Modal_CVPR_2025_paper.pdf)** | **[arXiv](https://arxiv.org/pdf/2506.09952v1)** | **[Project Page](https://ivg-yanranzhang.github.io/UniPre3D/)**
 
 <div align=center>
 <img src='assets\teaser.png' width=350 height=300>
