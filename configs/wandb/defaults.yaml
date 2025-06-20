@@ -1,0 +1,4 @@
+---
+project: UniPre3D
+entity: Your_WandB_Entity
+base_url : https://api.wandb.ai
