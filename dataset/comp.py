@@ -166,7 +166,7 @@ class ShapeNetDataset(Dataset):
         self._initialize_storage_if_needed()
 
         # Load camera information
-        if example_id not in self.all_rgbs.keys():
+        if example_id not in self.all_rgbs.keys(): 
             self._load_camera_info(
                 example_id, rgb_paths, pose_paths, metadata_paths, trans, scale
             )
@@ -222,16 +222,10 @@ class ShapeNetDataset(Dataset):
 
         # Handle test dataset specific data
         if self.dataset_name == "test":
-            cam_infos = self._load_test_dataset_info(
-                example_id, rgb_paths, metadata_paths
-            )
+            cam_infos = self._load_test_dataset_info(example_id, rgb_paths, metadata_paths)
         else:
             cam_infos = readCamerasFromTxt(
-                rgb_paths,
-                pose_paths,
-                list(range(len(rgb_paths))),
-                fov=self.cfg.data.fov,
-                dataset_type="shapenet",
+                rgb_paths, pose_paths, list(range(len(rgb_paths))),fov = self.cfg.data.fov,dataset_type="shapenet"
             )
 
         # Process camera information
@@ -239,7 +233,7 @@ class ShapeNetDataset(Dataset):
 
     def _load_test_dataset_info(
         self, example_id: str, rgb_paths: List[str], metadata_paths: List[str]
-    ):
+    ) -> None:
         """
         Load test dataset specific information
 
@@ -261,14 +255,13 @@ class ShapeNetDataset(Dataset):
             rgb_paths * rate,
             self.continuous_pose_matrix,
             list(range(len(self.continuous_pose_matrix))),
-            fov=self.cfg.data.fov,
+            fov = self.cfg.data.fov,
             is_path=False,
-            dataset_type="shapenet",
+            dataset_type="shapenet"
         )
 
         # Load metadata
         self._load_metadata_angles(example_id, metadata_paths[0])
-
         return cam_infos
 
     def _load_metadata_angles(self, example_id: str, metadata_path: str) -> None:
@@ -370,7 +363,9 @@ class ShapeNetDataset(Dataset):
         )
 
         # Sample points using furthest point sampling
-        idx = furthest_point_sample(tensor_data[:3], 1024).long()
+        idx = furthest_point_sample(
+            tensor_data[:3], 1024
+        ).long()
 
         # Process point cloud based on input channel configuration
         new_data = self._process_point_cloud(tensor_data, idx)
@@ -528,10 +523,12 @@ class ShapeNetDataset(Dataset):
             "pos": self.all_pts[example_id],
             "extrinsic": self.all_w2c[example_id][frame_indices].clone().cuda(),
         }
-
+        
         # Apply augmentation if needed
         if self.cfg.model.aug and self.dataset_name == "train":
-            output_dict = self._apply_augmentation(pts_to_be_transformed, output_dict)
+            output_dict = self._apply_augmentation(
+                pts_to_be_transformed, frame_indices, output_dict
+            )
         output_dict["point_cloud"] = pts_to_be_transformed
         output_dict["point_cloud"]["pos"] = self._add_gravity_dimension(
             output_dict["point_cloud"]["pos"]
@@ -539,12 +536,13 @@ class ShapeNetDataset(Dataset):
 
         return output_dict
 
-    def _apply_augmentation(self, pts_to_be_transformed, output_dict):
+    def _apply_augmentation(self,pts_to_be_transformed, frame_indices, output_dict):
         """
         Apply data augmentation to point cloud and camera poses.
 
         Args:
             pts_to_be_transformed (dict)
+            frame_indices (torch.Tensor): Indices of selected frames
             output_dict (dict): Dictionary containing data to be augmented
 
         Returns:
