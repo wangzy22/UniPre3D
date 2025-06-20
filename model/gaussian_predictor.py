@@ -90,7 +90,6 @@ class GaussianSplatPredictor(nn.Module):
                 image,
                 source_cameras_view_to_world,
                 unprojected_coords,
-                links,
             )
         else:
             return self._forward_basic(point_cloud, source_cameras_view_to_world)
@@ -114,7 +113,6 @@ class GaussianSplatPredictor(nn.Module):
         point_cloud: torch.Tensor,
         image: torch.Tensor,
         source_cameras_view_to_world: Optional[torch.Tensor] = None,
-        links: Optional[torch.Tensor] = None,
         unprojected_coords: Optional[torch.Tensor] = None,
     ) -> Dict[str, torch.Tensor]:
         """Forward pass for fusion network with support for both object and scene level processing
@@ -124,7 +122,6 @@ class GaussianSplatPredictor(nn.Module):
             image: Input image tensor
             source_cameras_view_to_world: Camera transformation matrix (for object level)
             unprojected_coords: Unprojected coordinates (for scene level)
-            links: Links between points and voxels (for scene level)
 
         Returns:
             Dictionary containing processed features and parameters
@@ -160,7 +157,6 @@ class GaussianSplatPredictor(nn.Module):
             point_features, indices = self.point_network.forward_point_fusion(
                 point_cloud,
                 image_features,
-                links,
                 unprojected_coords,
                 self.fusion_mlps,
             )

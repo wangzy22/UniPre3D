@@ -30,7 +30,7 @@ class ImageFeaturePredictor(nn.Module):
         )
         print("Load ImageFeaturePredictor successfully!")
         self.encoder.eval()
-        self.encoder.to(self.cfg.general.device)
+        self.encoder.to(torch.cuda.current_device())
         # Load encoder config
         self.encoder_config = self.encoder.config
 

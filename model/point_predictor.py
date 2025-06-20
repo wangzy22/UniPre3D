@@ -114,13 +114,12 @@ class PointFeaturePredictor(nn.Module):
         self,
         x: torch.Tensor,
         image_features: torch.Tensor,
-        links: torch.Tensor,
         unprojected_coords: torch.Tensor,
         fusion_mlps: nn.ModuleList,
     ) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
         """Forward pass with image fusion"""
         output = self.encoder.forward(
-            x, image_features, links, unprojected_coords, fusion_mlps
+            x, image_features, unprojected_coords, fusion_mlps
         )
         return (output.features, output.indices)
 

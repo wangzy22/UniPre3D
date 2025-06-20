@@ -290,7 +290,6 @@ class SpUNetBase(nn.Module):
         self,
         input_dict,
         img_features,
-        links=None,
         unprojected_coords=None,
         fusion_mlps=None,
     ):
@@ -300,7 +299,6 @@ class SpUNetBase(nn.Module):
         Args:
             input_dict (dict): Input dictionary containing point cloud data
             img_features (tensor): Image features for fusion
-            links (tensor): Linking information
             unprojected_coords (tensor): Unprojected coordinates for fusion
             fusion_mlps (nn.Module): MLPs for point fusion
         """
@@ -315,19 +313,6 @@ class SpUNetBase(nn.Module):
         feat = input_dict["feat"]
         offset = input_dict["offset"]
 
-        raw_inverse = input_dict["inverse"]
-        pts_num_list = input_dict["pts_num"]
-        current_links = links
-
-        pts_accumulated_num = 0
-        for i in range(len(offset) - 1):
-            pts_accumulated_num += pts_num_list[i]
-            raw_inverse[
-                pts_accumulated_num : pts_accumulated_num + pts_num_list[i + 1]
-            ] += offset[i]
-            current_links[
-                pts_accumulated_num : pts_accumulated_num + pts_num_list[i + 1], 0
-            ] = (i + 1)
         # Add batch_num in links
         batch = offset2batch(offset)
         sparse_shape = torch.add(torch.max(grid_coord, dim=0).values, 96).tolist()

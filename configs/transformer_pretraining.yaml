@@ -24,7 +24,6 @@ opt:
   level: "object"
   use_fusion: true
   base_lr: 0.0001
-  step_lr_at: 20000
   batch_size: 32
   test_generation_num: 1
   loss: focal_l2

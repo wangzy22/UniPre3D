@@ -214,7 +214,6 @@ class ScanNetDataset(Dataset):
         self.all_pts_normal = {}
         self.all_pts_segment = {}
         self.all_pts_instance = {}
-        self.useful_links = {}
         self.all_unprojected_coords = {}
         self.all_depth = {}
         self.original_coords_len = {}
@@ -268,7 +267,6 @@ class ScanNetDataset(Dataset):
         self.all_pts_normal[example_id] = []
         self.all_pts_segment[example_id] = []
         self.all_pts_instance[example_id] = []
-        self.useful_links[example_id] = []
         self.all_unprojected_coords[example_id] = []
         self.all_depth[example_id] = []
 
@@ -423,7 +421,7 @@ class ScanNetDataset(Dataset):
             return self.__getitem__(random.randint(0, len(self.metadata) - 1))
 
         # Select frames based on dataset mode
-        frame_idxs = self._select_frames(example_id, num_images)
+        frame_idxs = self._select_frames(num_images)
 
         # Process point cloud data
         pts_data = self._process_points_for_sample(example_id, frame_idxs)
@@ -434,22 +432,17 @@ class ScanNetDataset(Dataset):
         # Combine and return all data
         return {**pts_data, **camera_data}
 
-    def _select_frames(self, example_id, num_images):
+    def _select_frames(self, num_images):
         """
         Select frames for training or evaluation based on configuration.
 
         Args:
-            example_id: ID of the example
             num_images: Total number of available images
 
         Returns:
             List of selected frame indices
         """
-        if (
-            self.dataset_name == "train"
-            or self.dataset_name == "val"
-            or self.cfg.opt.mode == "test"
-        ):
+        if self.dataset_name == "train" or self.dataset_name == "val":
             return self._select_training_frames(num_images)
         else:
             return self._select_evaluation_frames(num_images)
