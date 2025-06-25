@@ -55,4 +55,4 @@ CUDA_VISIBLE_DEVICES=$GPUs python examples/shapenetpart/main.py \
 
 ## Note
 
-When loading the model, some repositories may use strict loading mode. Please modify the torch.load parameter to strict=False to ensure successful loading.
+When loading the model, some repositories may use strict loading mode. Please modify the torch.load parameter to `strict=False` to ensure successful loading.
