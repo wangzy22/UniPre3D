@@ -52,3 +52,7 @@ CUDA_VISIBLE_DEVICES=$GPUs python examples/shapenetpart/main.py \
     --cfg ./cfgs/shapenetpart/pointmlp_finetune.yaml \
     --pretrained_path /path/to/pointmlp_pretrained.pth \
 ```
+
+## Note
+
+When loading the model, some repositories may use strict loading mode. Please modify the torch.load parameter to strict=False to ensure successful loading.
