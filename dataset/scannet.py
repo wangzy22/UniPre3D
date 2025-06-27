@@ -542,11 +542,11 @@ class ScanNetDataset(Dataset):
     def _process_points_for_sample(self, example_id, frame_idxs):
         """Process point cloud data for a sample."""
         pts_data = {
-            "coord": self.all_pts_coord[example_id][frame_idxs].copy(),
-            "color": self.all_pts_color[example_id][frame_idxs].copy(),
-            "normal": self.all_pts_normal[example_id][frame_idxs].copy(),
-            "segment": self.all_pts_segment[example_id][frame_idxs].copy(),
-            "instance": self.all_pts_instance[example_id][frame_idxs].copy(),
+            "coord": self.all_pts_coord[example_id].copy(),
+            "color": self.all_pts_color[example_id].copy(),
+            "normal": self.all_pts_normal[example_id].copy(),
+            "segment": self.all_pts_segment[example_id].copy(),
+            "instance": self.all_pts_instance[example_id].copy(),
             "extrinsic": self.all_w2c[example_id][frame_idxs].clone(),
             "gt_images": self.all_rgbs[example_id][frame_idxs].copy(),
             "depth": self.all_depth[example_id][frame_idxs].copy(),

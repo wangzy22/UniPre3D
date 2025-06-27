@@ -280,3 +280,25 @@ def to_device(data, device):
 
     # Return unchanged if not tensor/dict/list/tuple
     return data
+
+
+def reshape_scannet_data(data: dict, bs_per_gpu: int):
+    DATASET_KEYS = [
+        "coord",
+        "feat",
+        "segment",
+        "offset",
+        "grid_coord",
+        "links",
+        "inverse",
+        "no_occlusion_links",
+        "condition",
+    ]
+    for key in data:
+        if key not in DATASET_KEYS and torch.is_tensor(data[key]):
+            original_shape = data[key].shape
+            new_shape = (
+                bs_per_gpu,
+                original_shape[0] // bs_per_gpu,
+            ) + original_shape[1:]
+            data[key] = data[key].reshape(new_shape)

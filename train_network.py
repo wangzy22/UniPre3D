@@ -26,10 +26,10 @@ from model.gaussian_predictor import GaussianSplatPredictor
 from dataset.dataset_factory import get_dataset
 from gaussian_renderer import render_predicted
 from eval import evaluate_dataset
-from utils.general_utils import safe_state, to_device
+from utils.general_utils import safe_state, to_device, reshape_scannet_data
 from utils.loss_utils import l1_loss, l2_loss, focal_l2_loss
 import lpips as lpips_lib
-from typing import Dict, Any, List, Tuple
+from typing import Dict, List, Tuple
 from functools import partial
 import multiprocessing
 
@@ -298,18 +298,6 @@ class ValidationManager:
 class Trainer:
     """Main trainer class that orchestrates the training process"""
 
-    DATASET_KEYS = [
-        "coord",
-        "feat",
-        "segment",
-        "offset",
-        "grid_coord",
-        "links",
-        "inverse",
-        "no_occlusion_links",
-        "condition",
-    ]
-
     def __init__(self, cfg: DictConfig):
         self.vis_dir = os.getcwd()
         self.device = safe_state(cfg)
@@ -400,6 +388,9 @@ class Trainer:
                     ),
                 }
             )
+
+        if self.cfg.data.category == "scannet":
+            reshape_scannet_data(model_inputs, self.data_manager.bs_per_gpu)
 
         return to_device(model_inputs, self.device)
 

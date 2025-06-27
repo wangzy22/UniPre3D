@@ -326,12 +326,11 @@ class SpUNetBase(nn.Module):
         )
         x = self.conv_input(init_x)
 
-        img_features.reverse()
         if self.use_fusion:
             assert unprojected_coords is not None
-            point_fusion = point_fusion.to(img_features[0].device)
+            point_fusion = point_fusion.to(img_features.device)
             x = point_fusion(
-                img_features[0],
+                img_features,
                 x,
                 unprojected_coords,
                 input_dict,
@@ -347,7 +346,6 @@ class SpUNetBase(nn.Module):
 
         if not self.cls_mode:
             # dec forward
-            h, w = img_features[0].shape[2], img_features[0].shape[3]
             for s in reversed(range(self.num_stages)):
 
                 x = self.up[s](x)

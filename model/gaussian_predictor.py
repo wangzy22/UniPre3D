@@ -212,12 +212,9 @@ class GaussianSplatPredictor(nn.Module):
                 nn.Conv2d(image_conv_in_dim, image_conv_out_dim, kernel_size=1),
             )
             if self.cfg.opt.level == "object"
-            else spconv.SparseSequential(
-                spconv.SubMConv3d(
-                    image_conv_in_dim, fusion_dim, kernel_size=3, padding=1
-                ),
-                nn.BatchNorm1d(fusion_dim),
-                nn.ReLU(inplace=True),
+            else nn.Sequential(
+                nn.GroupNorm(32, image_conv_in_dim, eps=1e-06),
+                nn.Conv2d(image_conv_in_dim, fusion_dim, kernel_size=1),
             )
         )
 
