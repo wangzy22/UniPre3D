@@ -96,11 +96,11 @@ class GaussianSplatPredictor(nn.Module):
 
     def _forward_basic(self, point_cloud, source_cameras_view_to_world):
         """Forward pass for basic network"""
-        B = point_cloud.shape[0]
+        B = source_cameras_view_to_world.shape[0]
         N_views = 1
 
         # Process network output
-        point_output, center = self.network(point_cloud)
+        point_output, center = self.point_network(point_cloud)
 
         # Generate final output
         network_output = point_output.split(self.split_dimensions, dim=1)
@@ -181,7 +181,7 @@ class GaussianSplatPredictor(nn.Module):
 
     def _init_basic_network(self, split_dimensions):
         """Initialize basic network without fusion"""
-        self.network = networkCallBack(
+        self.point_network = networkCallBack(
             self.cfg,
             self.cfg.model.backbone_type,
             split_dimensions,

@@ -395,12 +395,13 @@ class ScanNetDataset(Dataset):
         self.all_camera_centers[example_id] = torch.stack(
             self.all_camera_centers[example_id]
         )
-        self.all_unprojected_coords[example_id] = torch.stack(
-            self.all_unprojected_coords[example_id]
-        )
+        if self.use_ref_images:
+            self.all_unprojected_coords[example_id] = torch.stack(
+                self.all_unprojected_coords[example_id]
+            )
         self.all_rgbs[example_id] = np.stack(self.all_rgbs[example_id])
         self.all_w2c[example_id] = torch.stack(self.all_w2c[example_id])
-        if hasattr(self, "all_depth") and example_id in self.all_depth:
+        if hasattr(self, "all_depth") and example_id in self.all_depth and len(self.all_depth[example_id]) > 0:
             self.all_depth[example_id] = np.stack(self.all_depth[example_id])
 
     def __getitem__(self, index):
@@ -451,7 +452,6 @@ class ScanNetDataset(Dataset):
         Returns:
             List of selected frame indices
         """
-        if self.dataset_name == "train" or self.dataset_name == "val":
         if (
             self.dataset_name == "train"
             or self.dataset_name == "val"
@@ -562,7 +562,8 @@ class ScanNetDataset(Dataset):
             "instance": self.all_pts_instance[example_id].copy(),
             "extrinsic": self.all_w2c[example_id][frame_idxs].clone(),
             "gt_images": self.all_rgbs[example_id][frame_idxs].copy(),
-            "depth": self.all_depth[example_id][frame_idxs].copy(),
+            "depth": self.all_depth[example_id][frame_idxs].copy() if self.use_ref_images else torch.zeros(
+                (len(frame_idxs), self.cfg.data.training_height, self.cfg.data.training_width))
         }
 
         for transform in self.transforms:
@@ -586,7 +587,10 @@ class ScanNetDataset(Dataset):
             "camera_centers": self.all_camera_centers[example_id][frame_idxs],
             "unprojected_coords": self.all_unprojected_coords[example_id][frame_idxs],
         }
-
+        if self.use_ref_images:
+            camera_data["unprojected_coords"] = self.all_unprojected_coords[example_id][
+                frame_idxs
+            ]
         return camera_data
 
 

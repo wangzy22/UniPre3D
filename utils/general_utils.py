@@ -344,7 +344,6 @@ def reshape_scannet_data(data: dict, bs_per_gpu: int):
         "links",
         "inverse",
         "condition",
-        "unprojected_coords",
     ]
     for key in data:
         if key not in DATASET_KEYS and torch.is_tensor(data[key]):
