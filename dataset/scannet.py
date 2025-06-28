@@ -113,13 +113,7 @@ class ScanNetDataset(Dataset):
                 return_inverse=True,
             ),
             CenterShift(apply_z=False, keys=["extrinsic"]),
-            NormalizeColor(
-                normalization_type=(
-                    "gaussian"
-                    if self.cfg.model.image_encoder_name == "Deeplabv3plus"
-                    else "01"
-                )
-            ),
+            NormalizeColor(),
             ToTensor(),
             Collect(
                 keys=("coord", "grid_coord", "segment", "inverse"),
@@ -196,11 +190,26 @@ class ScanNetDataset(Dataset):
         data_dict = self._load_point_cloud_data(metadata_path)
 
         # Process point cloud data
-        self._process_point_cloud_data(example_id, data_dict)
+        moving_centers = self._process_point_cloud_data(example_id, data_dict)
 
         # Process camera data
-        self._process_camera_data(example_id, rgb_paths, pose_paths, depth_paths)
+        self._process_camera_data(example_id, rgb_paths, pose_paths, depth_paths, moving_centers=moving_centers)
 
+    def get_example_id(self, index: int) -> str:
+        """
+        Get the example ID for a given index.
+
+        Args:
+            index: Index of the sample
+
+        Returns:
+            Unique identifier for the example
+        """
+        metadata_path = self.metadata[index]
+        parent_dir, category_instance_dir = os.path.split(metadata_path)
+        category, instance = os.path.split(parent_dir)
+        return f"{instance}-{category_instance_dir}"
+    
     def _initialize_data_containers(self):
         """Initialize all data containers for the dataset."""
         self.all_rgbs = {}
@@ -269,22 +278,7 @@ class ScanNetDataset(Dataset):
         self.all_pts_instance[example_id] = []
         self.all_unprojected_coords[example_id] = []
         self.all_depth[example_id] = []
-        
-    def get_example_id(self, index: int) -> str:
-        """
-        Get the example ID for a given index.
 
-        Args:
-            index: Index of the sample
-
-        Returns:
-            Unique identifier for the example
-        """
-        metadata_path = self.metadata[index]
-        parent_dir, category_instance_dir = os.path.split(metadata_path)
-        category, instance = os.path.split(parent_dir)
-        return f"{instance}-{category_instance_dir}"
-    
     def _load_point_cloud_data(self, metadata_path):
         """Load point cloud data from .npy files."""
         data_dict = {}
@@ -458,6 +452,10 @@ class ScanNetDataset(Dataset):
             List of selected frame indices
         """
         if self.dataset_name == "train" or self.dataset_name == "val":
+        if (
+            self.dataset_name == "train"
+            or self.dataset_name == "val"
+        ):
             return self._select_training_frames(num_images)
         else:
             return self._select_evaluation_frames(num_images)

@@ -116,7 +116,7 @@ class Add(object):
 
 @TRANSFORMS.register_module()
 class NormalizeColor(object):
-    def __init__(self, normalization_type="gaussian"):
+    def __init__(self, normalization_type="01"):
         self.normalization_type = normalization_type
 
     def __call__(self, data_dict):
