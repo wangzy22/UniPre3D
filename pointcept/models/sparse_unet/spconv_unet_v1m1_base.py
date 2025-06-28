@@ -134,7 +134,7 @@ class SpUNetBase(nn.Module):
 
         # Initialize configuration
         self.cfg = cfg
-        self.use_fusion = hasattr(cfg.model, "use_fusion") and cfg.model.use_fusion
+        self.use_fusion = hasattr(cfg.opt, "use_fusion") and cfg.opt.use_fusion
 
         # Network parameters
         self.in_channels = in_channels
@@ -304,7 +304,7 @@ class SpUNetBase(nn.Module):
         """
         if self.use_fusion:
             point_fusion = PointFusion(
-                fusion_mlps=fusion_mlps,
+                fusion_mlp=fusion_mlps,
                 fea2d_dim=self.channels[0],
                 viewNum=self.cfg.data.input_images,
             )

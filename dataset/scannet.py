@@ -25,16 +25,7 @@ from pointcept.datasets.transform_with_extrinsic import (
     ChromaticJitter,
     CenterShift,
     RandomRotate,
-    RandomFlip,
-    RandomScale,
 )
-
-# Global constants
-SCANNET_PT_DATASET_ROOT = "/remote-home/share/PTScannet/"
-SCANNET_COLOR_DATASET_ROOT = (
-    "/remote-home/share/dataset/datasets_wzy/datasets/ScanNetV2/Segmentation/2D"
-)
-
 
 class ScanNetDataset(Dataset):
     """
@@ -54,9 +45,11 @@ class ScanNetDataset(Dataset):
         """
         super().__init__()
         self.cfg = cfg
+        self.SCANNET_PT_DATASET_ROOT = self.cfg.data.pts_dataset_root
+        self.SCANNET_COLOR_DATASET_ROOT = self.cfg.data.rgb_dataset_root  
         self.dataset_name = dataset_name
         self.use_ref_images = self.cfg.opt.use_fusion
-        self.base_path = SCANNET_PT_DATASET_ROOT
+        self.base_path = self.SCANNET_PT_DATASET_ROOT
 
         # Get metadata paths based on mode
         if self.cfg.opt.mode == "test":
@@ -241,19 +234,19 @@ class ScanNetDataset(Dataset):
 
         rgb_paths = sorted(
             glob.glob(
-                os.path.join(SCANNET_COLOR_DATASET_ROOT, "color", last_path, "*.jpg")
+                os.path.join(self.SCANNET_COLOR_DATASET_ROOT, "color", last_path, "*.jpg")
             ),
             key=lambda x: extract_number(os.path.basename(x)),
         )
         pose_paths = sorted(
             glob.glob(
-                os.path.join(SCANNET_COLOR_DATASET_ROOT, "pose", last_path, "*.txt")
+                os.path.join(self.SCANNET_COLOR_DATASET_ROOT, "pose", last_path, "*.txt")
             ),
             key=lambda x: extract_number(os.path.basename(x)),
         )
         depth_paths = sorted(
             glob.glob(
-                os.path.join(SCANNET_COLOR_DATASET_ROOT, "depth", last_path, "*.png")
+                os.path.join(self.SCANNET_COLOR_DATASET_ROOT, "depth", last_path, "*.png")
             ),
             key=lambda x: extract_number(os.path.basename(x)),
         )

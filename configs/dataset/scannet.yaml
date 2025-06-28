@@ -7,4 +7,5 @@ data:
   use_neighbor_imgs: true
   use_self_supervise: false
   supervised_max_distance: 5
-  dataset_root: /path/to/scannet/dataset
+  pts_dataset_root: /path/to/scannet/dataset
+  rgb_dataset_root: /path/to/scannet/color

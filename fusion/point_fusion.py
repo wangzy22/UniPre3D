@@ -127,11 +127,8 @@ class PointFusion(nn.Module):
             feat_3d.batch_size,
         )
 
-        # # Apply view fusion
-        # feat_2d_to_3d = self.view_fusion(feat_2d_sparse)
-
         # Combine 2D and 3D features
-        return self._fuse_features(feat_3d, feat_2d_to_3d, init_3d_data, data_dict)
+        return self._fuse_features(feat_3d, feat_2d_sparse, init_3d_data, data_dict)
 
     def _get_bounding_mask(
         self, coords: torch.Tensor, reference_coords: torch.Tensor

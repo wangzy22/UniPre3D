@@ -584,7 +584,7 @@ class PointTransformerV3(PointModule):
         assert self.cls_mode or self.num_stages == len(dec_num_head) + 1
         assert self.cls_mode or self.num_stages == len(dec_patch_size) + 1
 
-        self.use_fusion = hasattr(cfg.model, "use_fusion") and cfg.model.use_fusion
+        self.use_fusion = hasattr(cfg.opt, "use_fusion") and cfg.opt.use_fusion
         # norm layers
         if pdnorm_bn:
             bn_layer = partial(
@@ -734,13 +734,10 @@ class PointTransformerV3(PointModule):
         # Extract inverse mapping
         if self.use_fusion:
             point_fusion = PointFusion(
-                fusion_mlps=fusion_mlps,
+                fusion_mlp=fusion_mlps,
                 fea2d_dim=self.channels[0],
                 viewNum=self.cfg.data.input_images,
             )
-
-        raw_inverse = data_dict["inverse"]
-        current_links = links
 
         # Initialize and process original point cloud
         original_point = Point(data_dict)

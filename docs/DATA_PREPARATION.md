@@ -73,12 +73,13 @@ For using the dataset, you need to set the `data.dataset_root` in the `configs/d
 
 ### Download and Preparation
 
-We use the processed ScanNet dataset provided by [Pointcept](https://github.com/Pointcept/Pointcept?tab=readme-ov-file#scannet-v2).
+We utilize both point clouds and RGB images from ScanNet v2. For point cloud, we employ the processed ScanNet data provided by [Pointcept](https://github.com/Pointcept/Pointcept?tab=readme-ov-file#scannet-v2). For RGB images, we use the original [ScanNet v2](http://www.scan-net.org/) dataset directly. 
+
 
 ### ScanNet Dataset Structure
-After processing, your ScanNet dataset should look like:
+After processing, your ScanNet point cloud dataset should look like:
 ```
-scannet/
+scannet_pts_dataset_root/
 ├── train/
 │   ├── scene0000_00/
 │   │   ├── color.npy
@@ -100,4 +101,27 @@ scannet/
 │   └── ...
 ```
 
-For using the dataset, you need to set the `data.dataset_root` in the `configs/dataset/scannet.yaml` file.
+And your ScanNet rgb dataset should look like:
+```scannet_rgb_dataset_root/
+├── 2D
+│   ├── color/
+│   │   ├── scene0000_00/
+│   │   │   ├── 000000.jpg
+│   │   │   ├── 000001.jpg
+│   │   │   ├── ...
+│   │   └── ...
+│   ├── depth/
+│   │   ├── scene0000_00/
+│   │   │   ├── 000000.png
+│   │   │   ├── 000001.png
+│   │   │   ├── ...
+│   │   └── ...
+│   ├── pose/
+│   │   ├── scene0000_00/
+│   │   │   ├── 000000.txt
+│   │   │   ├── 000001.txt
+│   │   │   ├── ...
+│   │   └── ...
+```
+
+For using the dataset, you need to set the `data.pts_dataset_root` and `data.rgb_dataset_root` in the `configs/dataset/scannet.yaml` file.

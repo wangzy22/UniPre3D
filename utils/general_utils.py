@@ -237,7 +237,7 @@ def safe_state(cfg, silent=False):
     torch.manual_seed(cfg.general.random_seed)
     torch.cuda.manual_seed_all(cfg.general.random_seed)
 
-    if isinstance(cfg.general.device, list) and len(cfg.general.device) > 1:
+    if hasattr(cfg.general.device, '__len__') and not isinstance(cfg.general.device, str):
         device = torch.device(f"cuda:{torch.cuda.current_device()}")
     else:
         device_str = "cuda:{}".format(cfg.general.device) if cfg.general.cuda else "cpu"

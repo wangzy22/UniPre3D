@@ -21,12 +21,7 @@ from openpoints.transforms.point_transformer_gpu import (
 )
 
 # Dataset root path configuration
-SHAPENET_DATASET_ROOT = "/data1/datasets/center_renders/image"
 FILE_TITLE = "easy"
-
-assert (
-    SHAPENET_DATASET_ROOT is not None
-), "Please update the location of the SRN Shapenet Dataset"
 
 
 class ShapeNetDataset(Dataset):
@@ -54,7 +49,7 @@ class ShapeNetDataset(Dataset):
         self.dataset_name = dataset_name
 
         # Initialize dataset paths and metadata
-        self.base_path = SHAPENET_DATASET_ROOT
+        self.base_path = self.cfg.data.dataset_root
         self.metadata = self._initialize_metadata()
 
         # Split dataset based on dataset_name
