@@ -9,7 +9,7 @@ import lpips as lpips_lib
 import torch
 import torchvision
 from torch.utils.data import DataLoader
-from utils.general_utils import to_device
+from utils.general_utils import to_device,prepare_model_inputs
 
 from gaussian_renderer import render_predicted
 from model.gaussian_predictor import GaussianSplatPredictor
@@ -34,7 +34,7 @@ class Metricator:
 
 @torch.no_grad()
 def evaluate_dataset(
-    model, dataloader, device, model_cfg, save_vis=0, out_folder=None, pc_input=False
+    model, dataloader, device, model_cfg, save_vis=0, out_folder=None
 ):
     """
     Runs evaluation on the dataset passed in the dataloader.
@@ -42,7 +42,12 @@ def evaluate_dataset(
     Args:
         save_vis: how many examples will have visualisations saved
     """
-
+    bs_per_gpu = (
+        model_cfg.opt.batch_size
+        if not model_cfg.general.multiple_gpu
+        else model_cfg.opt.batch_size // len(self.cfg.general.device)
+    )
+    
     if save_vis > 0:
 
         os.makedirs(out_folder, exist_ok=True)
@@ -72,7 +77,6 @@ def evaluate_dataset(
         ssim_all_renders_cond = []
         lpips_all_renders_cond = []
 
-        data = to_device(data, device)
 
         example_id = dataloader.dataset.get_example_id(d_idx)
         if d_idx < save_vis:
@@ -86,32 +90,12 @@ def evaluate_dataset(
             os.makedirs(out_example, exist_ok=True)
 
         # batch has length 1, the [:input_images] is conditioning
-        if model_cfg.opt.use_fusion:
-            reconstruction = model(
-                data["point_cloud"],
-                data["gt_images"][:, : model_cfg.data.input_images, ...],
-                data["view_to_world_transforms"][:, : model_cfg.data.input_images, ...],
-                (
-                    data["unprojected_coords"][:, : model_cfg.data.input_images, ...]
-                    if model_cfg.opt.level == "scene"
-                    else None
-                ),
-                (
-                    data["links"][:, :, : model_cfg.data.input_images]
-                    if model_cfg.opt.level == "scene"
-                    else None
-                ),
-            )
-        else:
-            reconstruction = model(
-                data["point_cloud"],
-                None,
-                data["view_to_world_transforms"][:, : model_cfg.data.input_images, ...],
-                None,
-                None,
-            )
+        model_inputs = prepare_model_inputs(data, model_cfg, bs_per_gpu, device)
+
+        reconstruction = model(**model_inputs)
+        
         gaussian_splat_batch = {
-            k: v[0].contiguous() for k, v in reconstruction.items() if len(v.shape) > 1
+            k: v[0].contiguous() for k, v in reconstruction.items() if not isinstance(v, torch.Tensor) or len(v.shape) > 1
         }
         for r_idx in range(data["gt_images"].shape[1]):
             image = render_predicted(
@@ -137,9 +121,8 @@ def evaluate_dataset(
             # exclude non-foreground images from metric computation
             if not torch.all(data["gt_images"][0, r_idx, ...] == 0):
                 psnr, ssim, lpips = metricator.compute_metrics(
-                    image,
-                    data["gt_images"][0, r_idx, ...],
-                    # grey_gt_images
+                    image.to(device),
+                    data["gt_images"][0, r_idx, ...].to(device),
                 )
                 if r_idx < model_cfg.data.input_images:
                     psnr_all_renders_cond.append(psnr)

@@ -15,7 +15,7 @@ from datetime import datetime
 import numpy as np
 import random
 from PIL import Image
-
+from typing import Dict, Any
 
 def inverse_sigmoid(x):
     return torch.log(x / (1 - x))
@@ -248,6 +248,51 @@ def safe_state(cfg, silent=False):
     return device
 
 
+def prepare_model_inputs(
+        data: Dict[str, torch.Tensor], cfg: Dict[str, Any], bs_per_gpu: int, device: torch.device
+    ) -> Dict[str, torch.Tensor]:
+        """
+        Prepare input data for model forward pass.
+
+        Args:
+            data: Dictionary containing all input data including images, point clouds,
+                 and transformation matrices
+
+        Returns:
+            Dictionary containing processed model inputs with appropriate device placement
+            and batch organization
+        """
+        if cfg.data.category == "scannet":
+            reshape_scannet_data(data, bs_per_gpu)
+            
+        
+        point_cloud = data["point_cloud"] if "point_cloud" in data else data
+        view_transforms = data["view_to_world_transforms"][
+            :, : cfg.data.input_images, ...
+        ]
+
+        model_inputs = {
+            "point_cloud": point_cloud,
+            "source_cameras_view_to_world": view_transforms,
+            "image": None,
+            "unprojected_coords": None,
+        }
+
+        if cfg.opt.use_fusion:
+            model_inputs.update(
+                {
+                    "image": data["gt_images"][:, : cfg.data.input_images, ...],
+                    "unprojected_coords": (
+                        data["unprojected_coords"][:, : cfg.data.input_images, ...]
+                        if cfg.opt.level == "scene"
+                        else None
+                    ),
+                }
+            )
+
+        return to_device(model_inputs, device)
+
+
 def to_device(data, device):
     """
     Recursively moves data to specified device.
@@ -283,6 +328,13 @@ def to_device(data, device):
 
 
 def reshape_scannet_data(data: dict, bs_per_gpu: int):
+    """
+    Reshape the data dictionary to have a batch size of bs_per_gpu.
+    Args:
+        data (dict): The input data dictionary containing tensors.
+        bs_per_gpu (int): The desired batch size per GPU.
+    """
+    
     DATASET_KEYS = [
         "coord",
         "feat",
@@ -291,14 +343,17 @@ def reshape_scannet_data(data: dict, bs_per_gpu: int):
         "grid_coord",
         "links",
         "inverse",
-        "no_occlusion_links",
         "condition",
+        "unprojected_coords",
     ]
     for key in data:
         if key not in DATASET_KEYS and torch.is_tensor(data[key]):
             original_shape = data[key].shape
-            new_shape = (
-                bs_per_gpu,
-                original_shape[0] // bs_per_gpu,
-            ) + original_shape[1:]
-            data[key] = data[key].reshape(new_shape)
+            if original_shape[0] // bs_per_gpu > 0:
+                new_shape = (
+                    bs_per_gpu,
+                    original_shape[0] // bs_per_gpu,
+                ) + original_shape[1:]
+                data[key] = data[key].reshape(new_shape)
+            else:
+                data[key] = data[key].unsqueeze(0)

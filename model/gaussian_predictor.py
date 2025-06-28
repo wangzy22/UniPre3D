@@ -336,7 +336,7 @@ class GaussianSplatPredictor(nn.Module):
                 # Process SH features
                 if self.cfg.model.max_sh_degree > 0:
                     features_rest = network_output[5][mask]
-                    rest_shape = (*features_rest.shape[:2], -1, 3)
+                    rest_shape = (features_rest.shape[0], -1, 3)
                     out_dict["features_rest"][batch_id] = self._process_sh_features(
                         features_rest, rest_shape
                     )

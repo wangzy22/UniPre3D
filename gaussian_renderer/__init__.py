@@ -38,11 +38,13 @@ def render_predicted(pc : dict,
     else:
         tanfovx = math.tan(focal2fov(focals_pixels[0].item(), cfg.data.training_resolution))
         tanfovy = math.tan(focal2fov(focals_pixels[1].item(), cfg.data.training_resolution))
-
+        
+    image_height = int(cfg.data.training_resolution) if hasattr(cfg.data, "training_resolution") else cfg.data.training_height
+    image_width = int(cfg.data.training_resolution) if hasattr(cfg.data, "training_resolution") else cfg.data.training_width
     # Set up rasterization configuration
     raster_settings = GaussianRasterizationSettings(
-        image_height=int(cfg.data.training_resolution),
-        image_width=int(cfg.data.training_resolution),
+        image_height=image_height,
+        image_width=image_width,
         tanfovx=tanfovx,
         tanfovy=tanfovy,
         bg=bg_color,

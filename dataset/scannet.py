@@ -144,7 +144,7 @@ class ScanNetDataset(Dataset):
                 Collect(
                     keys=("coord", "grid_coord", "segment", "inverse"),
                     feat_keys=("normal", "color"),
-                    stack_keys=("extrinsic", "gt_images", "depth", "color"),
+                    stack_keys=("extrinsic", "gt_images", "depth"),
                 ),
             ]
         elif self.cfg.model.backbone_type == "ptv3":
@@ -269,7 +269,22 @@ class ScanNetDataset(Dataset):
         self.all_pts_instance[example_id] = []
         self.all_unprojected_coords[example_id] = []
         self.all_depth[example_id] = []
+        
+    def get_example_id(self, index: int) -> str:
+        """
+        Get the example ID for a given index.
 
+        Args:
+            index: Index of the sample
+
+        Returns:
+            Unique identifier for the example
+        """
+        metadata_path = self.metadata[index]
+        parent_dir, category_instance_dir = os.path.split(metadata_path)
+        category, instance = os.path.split(parent_dir)
+        return f"{instance}-{category_instance_dir}"
+    
     def _load_point_cloud_data(self, metadata_path):
         """Load point cloud data from .npy files."""
         data_dict = {}

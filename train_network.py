@@ -26,7 +26,8 @@ from model.gaussian_predictor import GaussianSplatPredictor
 from dataset.dataset_factory import get_dataset
 from gaussian_renderer import render_predicted
 from eval import evaluate_dataset
-from utils.general_utils import safe_state, to_device, reshape_scannet_data
+from utils.general_utils import safe_state, to_device,prepare_model_inputs
+
 from utils.loss_utils import l1_loss, l2_loss, focal_l2_loss
 import lpips as lpips_lib
 from typing import Dict, List, Tuple
@@ -220,7 +221,7 @@ class ValidationManager:
         )
 
     def validate_model(
-        self, model: torch.nn.Module, val_loader: DataLoader, iteration: int
+        self, model: torch.nn.Module, val_loader: DataLoader, iteration: int, lr: float = 0.0
     ) -> float:
         """Validate model performance"""
         torch.cuda.empty_cache()
@@ -236,11 +237,7 @@ class ValidationManager:
             self.logger.log_validation_progress(
                 scores,
                 iteration,
-                lr=(
-                    self.model_manager.scheduler.get_last_lr()[0]
-                    if self.model_manager.scheduler is not None
-                    else self.cfg.opt.base_lr
-                ),
+                lr=lr
             )
 
             psnr = torch.tensor(scores["PSNR_novel"]).to(self.device)
@@ -345,55 +342,6 @@ class Trainer:
 
         self.logger.finish()
 
-    def prepare_model_inputs(
-        self, data: Dict[str, torch.Tensor]
-    ) -> Dict[str, torch.Tensor]:
-        """
-        Prepare input data for model forward pass.
-
-        Args:
-            data: Dictionary containing all input data including images, point clouds,
-                 and transformation matrices
-
-        Returns:
-            Dictionary containing processed model inputs with appropriate device placement
-            and batch organization
-        """
-        point_cloud = data["point_cloud"] if "point_cloud" in data else data
-        view_transforms = data["view_to_world_transforms"][
-            :, : self.cfg.data.input_images, ...
-        ]
-
-        model_inputs = {
-            "point_cloud": point_cloud,
-            "source_cameras_view_to_world": view_transforms,
-            "image": None,
-            "unprojected_coords": None,
-            "links": None,
-        }
-
-        if self.cfg.opt.use_fusion:
-            model_inputs.update(
-                {
-                    "image": data["gt_images"][:, : self.cfg.data.input_images, ...],
-                    "unprojected_coords": (
-                        data["unprojected_coords"][:, : self.cfg.data.input_images, ...]
-                        if self.cfg.opt.level == "scene"
-                        else None
-                    ),
-                    "links": (
-                        data["links"][:, :, : self.cfg.data.input_images]
-                        if self.cfg.opt.level == "scene"
-                        else None
-                    ),
-                }
-            )
-
-        if self.cfg.data.category == "scannet":
-            reshape_scannet_data(model_inputs, self.data_manager.bs_per_gpu)
-
-        return to_device(model_inputs, self.device)
-
     def render_validation_views(
         self, gaussian_splats: Dict[str, torch.Tensor], data: Dict[str, torch.Tensor]
     ) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -456,7 +404,8 @@ class Trainer:
         """Execute one training iteration"""
         data = next(iter(self.data_manager.train_loader))
 
-        model_inputs = self.prepare_model_inputs(data)
+        model_inputs = prepare_model_inputs(data, self.cfg, self.data_manager.bs_per_gpu, self.device)
+
 
         gaussian_splats = self.model_manager.model(**model_inputs)
         rendered_images, gt_images = self.render_validation_views(gaussian_splats, data)
@@ -470,6 +419,7 @@ class Trainer:
     def validate(self, iteration: int) -> None:
         """Perform validation and generate test videos"""
         current_psnr = self.validation_manager.validate_model(
+            current_psnr = self.validation_manager.validate_model(
             (
                 self.model_manager.model
                 if not self.model_manager.ema
@@ -477,6 +427,12 @@ class Trainer:
             ),
             self.data_manager.val_loader,
             iteration,
+            lr = (
+                    self.model_manager.scheduler.get_last_lr()[0]
+                    if self.model_manager.scheduler is not None
+                    else self.cfg.opt.base_lr
+                )
+        )
         )
 
         if current_psnr > self.best_psnr and comm.get_rank() == 0:
@@ -493,7 +449,8 @@ class Trainer:
         vis_data = to_device(vis_data, self.device)
 
         # Generate gaussian splats
-        model_inputs = self.prepare_model_inputs(vis_data)
+        model_inputs = prepare_model_inputs(vis_data, self.cfg, self.data_manager.bs_per_gpu, self.device)
+
         gaussian_splats = self.model_manager.model(**model_inputs)
 
         # Generate test videos
