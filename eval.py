@@ -45,7 +45,7 @@ def evaluate_dataset(
     bs_per_gpu = (
         model_cfg.opt.batch_size
         if not model_cfg.general.multiple_gpu
-        else model_cfg.opt.batch_size // len(self.cfg.general.device)
+        else model_cfg.opt.batch_size // len(model_cfg.general.device)
     )
     
     if save_vis > 0:

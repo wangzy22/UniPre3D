@@ -507,9 +507,12 @@ class Trainer:
 def main(cfg: DictConfig):
     """Main entry point for training"""
     with open_dict(cfg):
-        cfg.general.multiple_gpu = (
-            isinstance(cfg.general.device, list) and len(cfg.general.device) > 1
-        )
+        # Handle both ListConfig and other types of device specifications
+        if hasattr(cfg.general.device, '__len__') and not isinstance(cfg.general.device, str):
+            cfg.general.multiple_gpu = len(cfg.general.device) > 1
+        else:
+            cfg.general.multiple_gpu = False
+
 
     multiprocessing.set_start_method("spawn")
     if cfg.general.multiple_gpu:

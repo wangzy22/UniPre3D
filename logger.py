@@ -112,12 +112,12 @@ class Logger:
         if not self.is_wandb_available:
             print(f"@ Iteration {iteration}:", end="")
             print(
-                f"  Training loss: {np.log10(loss_dict['total_loss'].item() + 1e-8):.4f}",
+                f"  Training log10 loss: {np.log10(loss_dict['total_loss'].item() + 1e-8):.4f}",
                 end="",
             )
             if "l12_loss" in loss_dict:
                 print(
-                    f"  L12 loss: {np.log10(loss_dict['l12_loss'].item() + 1e-8):.4f}",
+                    f"  L12 log10 loss: {np.log10(loss_dict['l12_loss'].item() + 1e-8):.4f}",
                     end="",
                 )
             if "lpips_loss" in loss_dict:
