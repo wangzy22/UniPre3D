@@ -208,6 +208,15 @@ class ModelManager:
         }
         torch.save(ckpt_save_dict, save_path)
 
+    def save_latest_checkpoint(self, iteration: int, best_psnr: float, save_dir: str) -> None:
+        """Save latest model checkpoint"""
+        save_path = os.path.join(save_dir, "model_latest.pth")
+        self.save_checkpoint(iteration, best_psnr, save_path)
+
+    def save_best_checkpoint(self, iteration: int, best_psnr: float, save_dir: str) -> None:
+        """Save best model checkpoint"""
+        save_path = os.path.join(save_dir, "model_best.pth")
+        self.save_checkpoint(iteration, best_psnr, save_path)
 
 class ValidationManager:
     """Manages model validation and evaluation"""
@@ -320,7 +329,7 @@ class Trainer:
                 
                 # Check gradients
                 if not self._check_and_clip_gradients():
-                    if not self.cfg.general.multiple_gpu or (comm.get_rank() == 0 and self.cfg.general.multiple_gpu):
+                    if (not self.cfg.general.multiple_gpu) or (comm.get_rank() == 0 and self.cfg.general.multiple_gpu):
                         print("Warning! Exiting training due to NaN gradients.")
                     self.model_manager.optimizer.zero_grad()
                     continue
@@ -452,7 +461,6 @@ class Trainer:
     def validate(self, iteration: int) -> None:
         """Perform validation and generate test videos"""
         current_psnr = self.validation_manager.validate_model(
-            current_psnr = self.validation_manager.validate_model(
             (
                 self.model_manager.model
                 if not self.model_manager.ema
@@ -466,13 +474,20 @@ class Trainer:
                     else self.cfg.opt.base_lr
                 )
         )
-        )
 
-        if current_psnr > self.best_psnr and comm.get_rank() == 0:
-            self.best_psnr = current_psnr
-            self.model_manager.save_checkpoint(
-                iteration, self.best_psnr, os.path.join(self.vis_dir, "model_best.pth")
+        # Only save checkpoints on rank 0 to avoid conflicts in distributed training
+        if comm.get_rank() == 0:
+            # Always save latest checkpoint after each validation
+            self.model_manager.save_latest_checkpoint(
+                iteration, self.best_psnr, self.vis_dir
             )
+            
+            # Save best checkpoint if performance improved
+            if current_psnr > self.best_psnr:
+                self.best_psnr = current_psnr
+                self.model_manager.save_best_checkpoint(
+                    iteration, self.best_psnr, self.vis_dir
+                )
 
     def generate_test_examples(self, iteration: int) -> None:
         """Generate test videos if needed"""

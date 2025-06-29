@@ -31,6 +31,11 @@ class ImageFeaturePredictor(nn.Module):
         print("Load ImageFeaturePredictor successfully!")
         self.encoder.eval()
         self.encoder.to(torch.cuda.current_device())
+        
+        # Set the model not to require gradients
+        for param in self.encoder.parameters():
+            param.requires_grad = False
+            
         # Load encoder config
         self.encoder_config = self.encoder.config
 

@@ -96,7 +96,7 @@ class Logger:
         print(f"@ Iteration {iteration} Val:", end="")
         print(scores)
         if lr is not None:
-            print(f"  Learning rate: {lr:.6f}")
+            print(f"Learning rate: {lr:.6f}")
 
     def _check_main_process(self) -> bool:
         """
