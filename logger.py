@@ -90,13 +90,13 @@ class Logger:
         ):
             return
 
-        if not self.is_wandb_available:
-            print(f"@ Iteration {iteration} Val:", end="")
-            print(scores)
-            if lr is not None:
-                print(f"  Learning rate: {lr:.6f}")
-        else:
+        if self.is_wandb_available:
             wandb.log(scores, step=iteration)
+        
+        print(f"@ Iteration {iteration} Val:", end="")
+        print(scores)
+        if lr is not None:
+            print(f"  Learning rate: {lr:.6f}")
 
     def log_training_progress(
         self, loss_dict: Dict[str, torch.Tensor], iteration: int
@@ -109,46 +109,45 @@ class Logger:
             return
 
         # If wandb is not available, print to console instead
-        if not self.is_wandb_available:
-            print(f"@ Iteration {iteration}:", end="")
+        print(f"@ Iteration {iteration}:", end="")
+        print(
+            f"  Training log10 loss: {np.log10(loss_dict['total_loss'].item() + 1e-8):.4f}",
+            end="",
+        )
+        if "l12_loss" in loss_dict:
             print(
-                f"  Training log10 loss: {np.log10(loss_dict['total_loss'].item() + 1e-8):.4f}",
+                f"  L12 log10 loss: {np.log10(loss_dict['l12_loss'].item() + 1e-8):.4f}",
                 end="",
             )
-            if "l12_loss" in loss_dict:
-                print(
-                    f"  L12 log10 loss: {np.log10(loss_dict['l12_loss'].item() + 1e-8):.4f}",
-                    end="",
-                )
-            if "lpips_loss" in loss_dict:
-                print(
-                    f"  LPIPS loss: {np.log10(loss_dict['lpips_loss'].item() + 1e-8):.4f}",
-                    end="",
-                )
-            print("")
-            return
-
-        # Log to wandb if available
-        wandb.log(
-            {"training_loss": np.log10(loss_dict["total_loss"].item() + 1e-8)},
-            step=iteration,
-        )
-
-        if "l12_loss" in loss_dict:
-            wandb.log(
-                {"training_l12_loss": np.log10(loss_dict["l12_loss"].item() + 1e-8)},
-                step=iteration,
-            )
-
         if "lpips_loss" in loss_dict:
+            print(
+                f"  LPIPS loss: {np.log10(loss_dict['lpips_loss'].item() + 1e-8):.4f}",
+                end="",
+            )
+        print("")
+
+        if self.is_wandb_available:
+            # Log to wandb if available
             wandb.log(
-                {
-                    "training_lpips_loss": np.log10(
-                        loss_dict["lpips_loss"].item() + 1e-8
-                    )
-                },
+                {"training_loss": np.log10(loss_dict["total_loss"].item() + 1e-8)},
                 step=iteration,
             )
+
+            if "l12_loss" in loss_dict:
+                wandb.log(
+                    {"training_l12_loss": np.log10(loss_dict["l12_loss"].item() + 1e-8)},
+                    step=iteration,
+                )
+
+            if "lpips_loss" in loss_dict:
+                wandb.log(
+                    {
+                        "training_lpips_loss": np.log10(
+                            loss_dict["lpips_loss"].item() + 1e-8
+                        )
+                    },
+                    step=iteration,
+                )
 
     def log_test_videos(
         self,
@@ -249,7 +248,7 @@ class Logger:
                 iio.imwrite(
                     video_path,
                     process_frames(test_loop_gt),
-                    fps=10,
+                    fps=5,
                     codec="libx264",
                     output_params=["-pix_fmt", "yuv420p"],
                 )
