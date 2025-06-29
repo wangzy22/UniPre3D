@@ -317,11 +317,17 @@ class Trainer:
 
                 # Optimizer step
                 loss_dict["total_loss"].backward()
+                
+                # Check gradients
+                if not self._check_and_clip_gradients():
+                    if not self.cfg.general.multiple_gpu or (comm.get_rank() == 0 and self.cfg.general.multiple_gpu):
+                        print("Warning! Exiting training due to NaN gradients.")
+                    self.model_manager.optimizer.zero_grad()
+                    continue
+                
+                # Update model parameters
                 self.model_manager.optimizer.step()
                 self.model_manager.optimizer.zero_grad()
-
-                # Gradient clipping if enabled
-                torch.nn.utils.clip_grad_norm_(self.model_manager.model.parameters(), max_norm=1.0)
 
                 # Step scheduler if enabled
                 if self.model_manager.scheduler is not None:
@@ -345,6 +351,30 @@ class Trainer:
 
         self.logger.finish()
 
+    def _check_and_clip_gradients(self) -> bool:
+        """Check for invalid gradients (NaN) and apply gradient clipping if valid.
+        
+        Returns:
+            bool: True if gradients are valid and clipping was applied, 
+                False if NaN gradients were detected.
+        """
+        # Check for NaN gradients
+        has_invalid_gradients = any(
+            torch.isnan(param.grad).any() or torch.isinf(param.grad).any()
+            for param in self.model_manager.model.parameters()
+            if param.grad is not None
+        )
+        
+        if has_invalid_gradients:
+            return False
+        
+        # Apply gradient clipping if gradients are valid
+        torch.nn.utils.clip_grad_norm_(
+            self.model_manager.model.parameters(),
+            max_norm=1.0,
+        )
+        return True
+    
     def render_validation_views(
         self, gaussian_splats: Dict[str, torch.Tensor], data: Dict[str, torch.Tensor]
     ) -> Tuple[torch.Tensor, torch.Tensor]:

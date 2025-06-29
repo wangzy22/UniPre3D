@@ -1,7 +1,7 @@
 # @package _global_
 data:
-  znear: 0.5
-  zfar: 2
+  znear: 0.2
+  zfar: 10
   category: scannet
   white_background: true
   use_neighbor_imgs: true

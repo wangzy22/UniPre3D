@@ -10,6 +10,7 @@ from typing import Any, List, Optional, Tuple, Union, Dict
 
 from model.image_predictor import ImageFeaturePredictor
 from model.point_predictor import PointFeaturePredictor
+from timm.models.layers import trunc_normal_
 
 
 class GaussianSplatPredictor(nn.Module):
@@ -219,21 +220,32 @@ class GaussianSplatPredictor(nn.Module):
         )
 
         # Initialize fusion MLPs
-        self.fusion_mlps = (
-            (
-                nn.Sequential(
+        if self.cfg.opt.level == "object":
+            self.fusion_mlps = nn.Sequential(
                     nn.Linear(image_conv_out_dim + fusion_dim, fusion_dim),
                     nn.ReLU(),
                 )
-            )
-            if self.cfg.opt.level == "object"
-            else spconv.SparseSequential(
+        else:
+            self.fusion_mlps = spconv.SparseSequential(
                 spconv.SubMConv3d(fusion_dim, fusion_dim, kernel_size=3, padding=1),
                 nn.BatchNorm1d(fusion_dim),
                 nn.ReLU(inplace=True),
             )
-        )
+            self._init_weights(self.fusion_mlps)
 
+    def _init_weights(self, m):
+        if isinstance(m, nn.Linear):
+            trunc_normal_(m.weight, std=0.02)
+            if m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+        elif isinstance(m, spconv.SubMConv3d):
+            trunc_normal_(m.weight, std=0.02)
+            if m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+        elif isinstance(m, nn.BatchNorm1d):
+            nn.init.constant_(m.bias, 0)
+            nn.init.constant_(m.weight, 1.0)
+            
     def _init_activations(self):
         """Initialize activation functions"""
         self.pos_act = nn.Tanh()
@@ -287,7 +299,11 @@ class GaussianSplatPredictor(nn.Module):
 
         # Process position
         pos = self.pos_act(xyz_raw) * self.cfg.model.offset_scale
-        pos = pos.permute(0, 2, 1) + center[:, :, :3]
+
+        if len(pos.shape) == 3:
+            pos = pos.permute(0, 2, 1) + center[:, :, :3]
+        else:
+            pos = pos + center[:, :3]
 
         # Handle isotropic scaling
         if self.cfg.model.isotropic:
