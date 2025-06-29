@@ -98,14 +98,23 @@ class Logger:
         if lr is not None:
             print(f"  Learning rate: {lr:.6f}")
 
+    def _check_main_process(self) -> bool:
+        """
+        Check if the current process is the main process for logging
+
+        Returns:
+            bool: True if this is the main process, False otherwise
+        """
+        return (
+            (comm.get_rank() == 0 and self.cfg.general.multiple_gpu)
+            or not self.cfg.general.multiple_gpu
+        )
+
     def log_training_progress(
         self, loss_dict: Dict[str, torch.Tensor], iteration: int
     ) -> None:
         """Log training progress with fallback for offline mode"""
-        if not (
-            (comm.get_rank() == 0 and self.cfg.general.multiple_gpu)
-            or not self.cfg.general.multiple_gpu
-        ):
+        if not self._check_main_process():
             return
 
         # If wandb is not available, print to console instead
@@ -165,6 +174,9 @@ class Logger:
             iteration: Current training iteration
             test_generate_num: Test generation number for multiple test cases
         """
+        if not self._check_main_process():
+            return
+        
         if self.is_wandb_available:
             # Log to wandb
             if test_loop is not None:
@@ -191,7 +203,7 @@ class Logger:
                 wandb.log(
                     {
                         video_name: wandb.Video(
-                            np.asarray(test_loop_gt), fps=10, format="mp4"
+                            np.asarray(test_loop_gt), fps=5, format="mp4"
                         )
                     },
                     step=iteration,
