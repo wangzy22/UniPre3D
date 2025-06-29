@@ -553,7 +553,7 @@ class ScanNetDataset(Dataset):
             "normal": self.all_pts_normal[example_id].copy(),
             "segment": self.all_pts_segment[example_id].copy(),
             "instance": self.all_pts_instance[example_id].copy(),
-            "extrinsic": self.all_w2c[example_id][frame_idxs].clone(),
+            "extrinsic": self.all_w2c[example_id][frame_idxs].clone().float(),
             "gt_images": self.all_rgbs[example_id][frame_idxs].copy(),
             "depth": self.all_depth[example_id][frame_idxs].copy() if self.use_ref_images else torch.zeros(
                 (len(frame_idxs), self.cfg.data.training_height, self.cfg.data.training_width))

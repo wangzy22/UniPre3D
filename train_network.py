@@ -320,6 +320,9 @@ class Trainer:
                 self.model_manager.optimizer.step()
                 self.model_manager.optimizer.zero_grad()
 
+                # Gradient clipping if enabled
+                torch.nn.utils.clip_grad_norm_(self.model_manager.model.parameters(), max_norm=1.0)
+
                 # Step scheduler if enabled
                 if self.model_manager.scheduler is not None:
                     self.model_manager.scheduler.step()
