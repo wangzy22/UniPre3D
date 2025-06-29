@@ -22,7 +22,7 @@ Our proposed pre-training task involves predicting Gaussian parameters from the 
 ## News 🔥
 
 - [2025-06-12] Our arXiv paper is released.
-- [2025-06-11] Our pretraining code is released.
+- [2025-06-11] Our object-level pretraining code is released.
 - [2025-02-27] Our paper is accepted by CVPR 2025.
 
 ## TODO (In Progress) ⭐
@@ -31,7 +31,7 @@ Our proposed pre-training task involves predicting Gaussian parameters from the 
 - [x] Release object-level pretraining code.
 - [x] Release object-level logs and checkpoints.
 - [x] Add more details about diverse downstream tasks.
-- [ ] Release scene-level pretraining code.
+- [x] Release scene-level pretraining code.
 - [ ] Release scene-level logs and checkpoints.
 
 ## Visualization Results 📷
@@ -45,20 +45,26 @@ Below is visualization of UniPre3D pre-training outputs. The first row presents 
 # Getting Started 🚀
 ## Table of Contents 📖
 
-1. [Environment Setup 🔧](#environment-setup)
+- [\[CVPR 2025\] UniPre3D: Unified Pre-training of 3D Point Cloud Models with Cross-Modal Gaussian Splatting](#cvpr-2025-unipre3d-unified-pre-training-of-3d-point-cloud-models-with-cross-modal-gaussian-splatting)
+  - [News 🔥](#news-)
+  - [TODO (In Progress) ⭐](#todo-in-progress-)
+  - [Visualization Results 📷](#visualization-results-)
+- [Getting Started 🚀](#getting-started-)
+  - [Table of Contents 📖](#table-of-contents-)
+  - [Environment Setup 🔧 ](#environment-setup--)
     - [Recommended Environment](#recommended-environment)
     - [Hardware Requirements](#hardware-requirements)
     - [Data Preparation](#data-preparation)
-2. [Object-level Pretraining 🪑](#object-pretraining)
+  - [Object-level Pre-training 🪑 ](#object-level-pre-training--)
     - [Usage](#usage)
-    - [Finetune on Object-level Downstream Tasks 🎯](#finetune-object)
+  - [Finetune on Object-level Downstream Tasks 🎯 ](#finetune-on-object-level-downstream-tasks--)
     - [Model Zoo (Pretrained Checkpoints)](#model-zoo-pretrained-checkpoints)
-3. [Scene-level Pretraining 🏠](#scene-level-pretraining-setup)
-    - [Usage(Coming soon...)](#usage-1)
-    - [Finetune on Scene-level Downstream Tasks 🎯(Coming soon...)](#finetune-scene)
-    - [Model Zoo (Pretrained Checkpoints)(Coming soon...)](#model-zoo-pretrained-checkpoints-1)
-4. [Acknowledgements 🙏](#acknowledgements)
-5. [Citation 📚](#cite)
+  - [Scene-level Pretraining 🏠 ](#scene-level-pretraining--)
+    - [Usage](#usage-1)
+  - [Finetune on Scene-level Downstream Tasks 🎯 ](#finetune-on-scene-level-downstream-tasks--)
+    - [Model Zoo (Pretrained Checkpoints)](#model-zoo-pretrained-checkpoints-1)
+  - [Acknowledgements 🙏 ](#acknowledgements--)
+  - [Citation 📚 ](#citation--)
 
 ## Environment Setup 🔧 <a id="environment-setup"></a>
 
@@ -154,7 +160,18 @@ Scene-level pretraining focuses on learning representations from complex 3D envi
 
 ### Usage
 
-Coming soon...
+
+Sparse Unet pretraining:
+```bash
+CUDA_VISIBLE_DEVICES=<GPUs> python train_network.py --config-name sparseunet_pretraining
+```
+
+PTv3 pretraining:
+```bash
+CUDA_VISIBLE_DEVICES=<GPUs> python train_network.py --config-name configs/ptv3_pretraining
+```
+
+> We cache dataset images in memory to accelerate data loading.  If you encounter memory constraints: Disable this feature by setting `opt.record_img` to `false` in `configs/settings.yaml`
 
 ## Finetune on Scene-level Downstream Tasks 🎯 <a id="finetune-scene"></a>
 
