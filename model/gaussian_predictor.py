@@ -249,9 +249,9 @@ class GaussianSplatPredictor(nn.Module):
     def _init_activations(self):
         """Initialize activation functions"""
         self.pos_act = nn.Tanh()
-        self.scaling_activation = torch.exp
+        self.scaling_activation =  lambda x: torch.exp(torch.clamp(x, -1, 20)) 
         self.opacity_activation = torch.sigmoid
-        self.rotation_activation = torch.nn.functional.normalize
+        self.rotation_activation = lambda x: torch.nn.functional.normalize(x, dim=-1, eps=1e-6) 
 
     def _init_sh_matrices(self):
         """Initialize spherical harmonics transformation matrices"""
