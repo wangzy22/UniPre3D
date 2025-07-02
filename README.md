@@ -169,7 +169,7 @@ CUDA_VISIBLE_DEVICES=<GPUs> python train_network.py --config-name sparseunet_pre
 
 PTv3 pretraining:
 ```bash
-CUDA_VISIBLE_DEVICES=<GPUs> python train_network.py --config-name configs/ptv3_pretraining
+CUDA_VISIBLE_DEVICES=<GPUs> python train_network.py --config-name ptv3_pretraining
 ```
 
 > We cache dataset images in memory to accelerate data loading.  If you encounter memory constraints: Disable this feature by setting `opt.record_img` to `false` in `configs/settings.yaml`
