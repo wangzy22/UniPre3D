@@ -5,7 +5,7 @@ defaults:
 general:
   cuda: true
   device: [0,1,2,3,4,5,6,7]
-  random_seed: 42
+  random_seed: 0
 
 data:
   fov: 57.9516132895
@@ -25,9 +25,9 @@ opt:
   level: "scene"
   use_fusion: true
   base_lr: 0.0001
-  step_lr_at: 5000
   batch_size: 8
+  step_lr: 5000
+  lr_gamma: 0.8
   test_generation_num: 1
   loss: l2
-
-
+  start_lpips_after: 10000
