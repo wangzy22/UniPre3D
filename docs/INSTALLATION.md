@@ -13,6 +13,9 @@ pip install torch==2.2.2 torchvision==0.17.2
 
 # Install project dependencies
 pip install -r requirements.txt
+
+# Install flash-attn for efficient attention mechanisms
+pip install flash-attn --no-build-isolation
 ```
 
 3. **Install C++ extensions**
