@@ -46,7 +46,7 @@ class ScanNetDataset(Dataset):
         super().__init__()
         self.cfg = cfg
         self.SCANNET_PT_DATASET_ROOT = self.cfg.data.pts_dataset_root
-        self.SCANNET_COLOR_DATASET_ROOT = self.cfg.data.rgb_dataset_root  
+        self.SCANNET_COLOR_DATASET_ROOT = self.cfg.data.rgb_dataset_root
         self.dataset_name = dataset_name
         self.use_ref_images = self.cfg.opt.use_fusion
         self.base_path = self.SCANNET_PT_DATASET_ROOT
@@ -58,6 +58,7 @@ class ScanNetDataset(Dataset):
             self.metadata = glob.glob(os.path.join(self.base_path, dataset_name, "*"))
 
         self.dataset_len = len(self.metadata)
+        print(f"Dataset {self.dataset_name} contains {self.dataset_len} examples.")
 
         # Initialize projection matrix
         self.projection_matrix = self._init_projection_matrix()
@@ -147,7 +148,7 @@ class ScanNetDataset(Dataset):
                 ToTensor(),
                 Collect(
                     keys=("coord", "segment", "grid_coord", "inverse"),
-                    feat_keys=("color", "normal"),
+                    feat_keys=("normal","color"),
                     stack_keys=("extrinsic", "gt_images", "depth"),
                 ),
                 FPS(max_points=80000),

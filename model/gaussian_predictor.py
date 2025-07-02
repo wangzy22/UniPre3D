@@ -43,9 +43,9 @@ class GaussianSplatPredictor(nn.Module):
             "final_dim": 32,
         },
         "ptv3": {
-            "feature_dim": 128,
-            "fusion_dim": 128,
-            "final_dim": 128,
+            "feature_dim": 32,
+            "fusion_dim": 32,
+            "final_dim": 32,
         },
     }
 

@@ -525,27 +525,14 @@ class PointTransformerV3(PointModule):
         in_channels=6,
         order=("z", "z-trans"),
         stride=(2, 2, 2, 2),
-        # enc_depths=(2, 2, 2, 6, 2),
-        enc_depths=(3, 3, 3, 6, 3),
-        enc_channels=(48, 96, 192, 384, 512),
-        # enc_channels=(32, 64, 128, 256, 512),
-        enc_num_head=(3, 6, 12, 24, 32),
-        # enc_num_head=(2, 4, 8, 16, 32),
-        # enc_patch_size=(48, 48, 48, 48, 48),
-        enc_patch_size=(1024, 1024, 1024, 1024, 1024),
-        # dec_depths=(2, 2, 2, 2),
-        # dec_channels=(64, 64, 128, 256),
-        # dec_num_head=(4, 4, 8, 16),
-        dec_depths=(3, 3, 3, 3),
-        dec_channels=(64, 96, 192, 384),
-        dec_num_head=(4, 6, 12, 24),
-        # dec_patch_size=(48, 48, 48, 48),
-        dec_patch_size=(
-            1024,
-            1024,
-            1024,
-            1024,
-        ),
+        enc_depths=(2, 2, 2, 6, 2),
+        enc_channels=(32, 64, 128, 256, 512),
+        enc_num_head=(2, 4, 8, 16, 32),
+        enc_patch_size=(48, 48, 48, 48, 48),
+        dec_depths=(2, 2, 2, 2),
+        dec_channels=(64, 64, 128, 256),
+        dec_num_head=(4, 4, 8, 16),
+        dec_patch_size=(48, 48, 48, 48),
         mlp_ratio=4,
         qkv_bias=True,
         qk_scale=None,
@@ -573,6 +560,7 @@ class PointTransformerV3(PointModule):
         self.order = [order] if isinstance(order, str) else order
         self.cls_mode = cls_mode
         self.shuffle_orders = shuffle_orders
+        self.channels = enc_channels
 
         assert self.num_stages == len(stride) + 1
         assert self.num_stages == len(enc_depths)
@@ -716,7 +704,7 @@ class PointTransformerV3(PointModule):
                 self.dec.add(module=dec, name=f"dec{s}")
 
     def forward(
-        self, data_dict, img_features, links, unprojected_coords=None, fusion_mlps=None
+        self, data_dict, img_features, unprojected_coords=None, fusion_mlps=None
     ):
         """
         Forward pass of the network.
@@ -747,19 +735,17 @@ class PointTransformerV3(PointModule):
         original_point.sparsify()
         original_point = self.embedding(original_point)
 
-        # Reverse image features for multi-scale processing
-        img_features.reverse()
 
         # Handle 2D-3D feature fusion in encoder
         if self.use_fusion:
             assert unprojected_coords is not None
             # Fusion using unprojected coordinates
-            self.linkers[0] = self.linkers[0].to(img_features[0].device)
-            original_point.sparse_conv_feat = self.linkers[0].forward_by_unprojection(
-                img_features[0],
+            point_fusion = point_fusion.to(img_features.device)
+            original_point.sparse_conv_feat = point_fusion(
+                img_features,
                 original_point.sparse_conv_feat,
                 unprojected_coords,
-                init_3d_data=original_point,
+                original_point,
             )
 
         # Export point data to new dictionary

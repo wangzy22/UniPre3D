@@ -64,8 +64,10 @@ class PointFeaturePredictor(nn.Module):
             )
         elif model_type == "sparseunet":
             return self.SUPPORTED_MODELS[model_type](
-                in_channels=6, num_classes=23, cfg=self.cfg
+                in_channels=6, num_classes=64, cfg=self.cfg
             )
+        elif model_type == "ptv3":
+            return PointTransformerV3(in_channels=6, cfg=self.cfg)
         elif model_type == "pcm":
             return BaseSeg(**self._get_mamba_config())
         elif model_type == "mamba3d":
@@ -77,6 +79,8 @@ class PointFeaturePredictor(nn.Module):
         """Create final layers based on model type"""
         if self.cfg.model.backbone_type.lower() in ["transformer", "mamba3d"]:
             return nn.Sequential(nn.Linear(384, 128), nn.ReLU(), nn.Linear(128, 23))
+        elif self.cfg.model.backbone_type.lower() in ["ptv3", "sparseunet"]:
+            return nn.Sequential(nn.Linear(64, 32), nn.ReLU(), nn.Linear(32, 23))
         else:
             return nn.Sequential(nn.Linear(128, 64), nn.ReLU(), nn.Linear(64, 23))
 
@@ -91,7 +95,7 @@ class PointFeaturePredictor(nn.Module):
         self, x: torch.Tensor
     ) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
         """Forward pass through the network"""
-        x, center = self.encoder(x, None, None, None, None)
+        x, center = self.encoder(x, None, None, None)
         output = self.final(x).permute(0, 2, 1)
         return (output, center)
 
@@ -121,7 +125,13 @@ class PointFeaturePredictor(nn.Module):
         output = self.encoder.forward(
             x, image_features, unprojected_coords, fusion_mlps
         )
-        return (output.features, output.indices)
+        if self.cfg.model.backbone_type.lower() == "ptv3":
+            return (
+                self.final(output.sparse_conv_feat.features),
+                output.sparse_conv_feat.indices,
+            )
+        elif self.cfg.model.backbone_type.lower() == "sparseunet":
+            return self.final(output.features), output.indices
 
     def _get_mamba_config(self):
         """Get configuration for PointMambaEncoder"""
