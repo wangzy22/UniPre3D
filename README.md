@@ -21,6 +21,7 @@ Our proposed pre-training task involves predicting Gaussian parameters from the 
 
 ## News 🔥
 
+- [2025-07-02] Our scene-level pretraining code is released.
 - [2025-06-12] Our arXiv paper is released.
 - [2025-06-11] Our object-level pretraining code is released.
 - [2025-02-27] Our paper is accepted by CVPR 2025.
@@ -32,7 +33,7 @@ Our proposed pre-training task involves predicting Gaussian parameters from the 
 - [x] Release object-level logs and checkpoints.
 - [x] Add more details about diverse downstream tasks.
 - [x] Release scene-level pretraining code.
-- [ ] Release scene-level logs and checkpoints.
+- [x] Release scene-level logs and checkpoints.
 
 ## Visualization Results 📷
 
@@ -182,7 +183,19 @@ We evaluate the effectiveness of UniPre3D on various object-level downstream tas
 
 ### Model Zoo (Pretrained Checkpoints)
 
-Coming soon...
+We provide pretrained models and checkpoints for scene-level tasks in the following table:
+| Model | Pretrained Checkpoint | Downstream Task | Dataset | Performance | Finetuning Logs |
+|------|----------------------|-----------------|--------------|-------|-----------|
+| Sparse Unet | [Baidu Disk](https://pan.baidu.com/s/1dq0JE4eiQPl2g85VUXOcJg?pwd=vv5f) [Google Drive](https://drive.google.com/file/d/1PrXLXpJ0d0tYkUKBozVT4UOPRtIl8XjU/view?usp=drive_link) | Semantic Segmentation | ScanNet20 | 75.8% mIoU<br>(+3.6%) | [Logs](https://drive.google.com/file/d/1-OxryEUVjdYwm7thX_q_EkCX4ESVCmQi/view?usp=drive_link) |
+| Sparse Unet | [Baidu Disk](https://pan.baidu.com/s/1dq0JE4eiQPl2g85VUXOcJg?pwd=vv5f) [Google Drive](https://drive.google.com/file/d/1PrXLXpJ0d0tYkUKBozVT4UOPRtIl8XjU/view?usp=drive_link) | Semantic Segmentation | ScanNet200 | 33.0% mIoU<br>(+8.0%) | [Logs](https://drive.google.com/file/d/1eGAK3LjQ7s9nqERXMw14kFgYsvSmhV5r/view?usp=drive_link) |
+| Sparse Unet | [Baidu Disk](https://pan.baidu.com/s/1dq0JE4eiQPl2g85VUXOcJg?pwd=vv5f) [Google Drive](https://drive.google.com/file/d/1PrXLXpJ0d0tYkUKBozVT4UOPRtIl8XjU/view?usp=drive_link) | Semantic Segmentation | S3DIS | 71.5% mIoU<br>(+6.1%) | [Logs](https://drive.google.com/file/d/1L-d0aCCxiIDQNwTZKSZ_02OIFZOhjOg3/view?usp=drive_link) |
+| Sparse Unet | [Baidu Disk](https://pan.baidu.com/s/1dq0JE4eiQPl2g85VUXOcJg?pwd=vv5f) [Google Drive](https://drive.google.com/file/d/1PrXLXpJ0d0tYkUKBozVT4UOPRtIl8XjU/view?usp=drive_link)  | Instance Segmentation  | ScanNet20 |75.9% mAP@25<br>(+1.2%) | [Logs](https://drive.google.com/file/d/1MbPD4ODXAOqjHrbnENv1NUySo1EvMlwi/view?usp=drive_link) |
+| Sparse Unet | [Baidu Disk](https://pan.baidu.com/s/1dq0JE4eiQPl2g85VUXOcJg?pwd=vv5f) [Google Drive](https://drive.google.com/file/d/1PrXLXpJ0d0tYkUKBozVT4UOPRtIl8XjU/view?usp=drive_link) | Instance Segmentation  | ScanNet200 | 37.1%  mAP@25<br>(+2.8%) | [Logs](https://drive.google.com/file/d/1yiuW_hQs1f885Qj7ruHbsURhAxlG02fj/view?usp=drive_link) |
+<!-- | Standard Transformer | [Baidu Disk](https://example.com/pcm_pretrained.pth) [Google Drive]() | Semantic Segmentation | S3DIS | 62.0% mIoU<br>(+2.0%) | [Logs](https://example.com/pcm_logs.txt) | -->
+| Point Transformer v3 | [Baidu Disk](https://pan.baidu.com/s/1_FtuKqEhxzcyg7W7YHpFBQ?pwd=kwn2) [Google Drive](https://drive.google.com/file/d/1Q0V5fpq7aWGRkMgYijnD0r-Aw2-z62Zj/view?usp=drive_link) | Semantic Segmentation | ScanNet20 | 76.6% mIoU<br>(+0.1%)| [Logs](https://drive.google.com/file/d/1_MZlklx7SZaPow82tm3PX3MpJQeZpZ4I/view?usp=drive_link) |
+| Point Transformer v3 | [Baidu Disk](https://pan.baidu.com/s/1_FtuKqEhxzcyg7W7YHpFBQ?pwd=kwn2) [Google Drive](https://drive.google.com/file/d/1Q0V5fpq7aWGRkMgYijnD0r-Aw2-z62Zj/view?usp=drive_link) | Semantic Segmentation | ScanNet200 |  36.0% mIoU<br>(+0.8%)| [Logs](https://drive.google.com/file/d/1kTbqTjEfK-wKQmBTuhnd3EWlaH7Bkjyj/view?usp=drive_link) |
+
+For more details on the usage of downstream tasks, please refer to the **[docs/SCENE_LEVEL_DOWNSTREAM_TASKS.md](docs/SCENE_LEVEL_DOWNSTREAM_TASKS.md)** file.
 
 ## Acknowledgements 🙏 <a id="acknowledgements"></a>
 
