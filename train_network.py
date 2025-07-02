@@ -448,12 +448,12 @@ class Trainer:
 
         model_inputs = prepare_model_inputs(data, self.cfg, self.data_manager.bs_per_gpu, self.device)
 
-
+        self.model_manager.model.train()
         gaussian_splats = self.model_manager.model(**model_inputs)
+        
         rendered_images, gt_images = self.render_validation_views(gaussian_splats, data)
 
         # Log rendered images if needed
-
         return self.validation_manager.calculate_losses(
             rendered_images, gt_images, iteration
         )
