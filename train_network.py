@@ -98,6 +98,7 @@ class DataManager:
                 shuffle=(self.train_sampler is None),
                 drop_last=True,
                 sampler=self.train_sampler,
+                worker_init_fn=self.init_fn,
                 **common_loader_params,
             )
 
@@ -321,6 +322,10 @@ class Trainer:
         """Main training loop"""
         for iteration in range(1, self.cfg.opt.iterations + 1):
             if self.cfg.opt.mode != "test":
+                # Set sampler epoch to ensure different samples across GPUs
+                if self.cfg.general.multiple_gpu:
+                    self.data_manager.train_sampler.set_epoch(iteration)
+                
                 # Training step
                 loss_dict = self.train_iteration(iteration)
 
