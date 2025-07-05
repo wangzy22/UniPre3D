@@ -16,7 +16,8 @@ model:
   backbone_type: pcm
   in_channels: 4
   aug: true
-
+  offset_scale: 1.0
+  
 opt:
   iterations: 100000
   mode: "train"

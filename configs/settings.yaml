@@ -22,7 +22,6 @@ opt:
 
 model:
   max_sh_degree: 1
-  offset_scale: 1.0
   isotropic: false
 
 logging:

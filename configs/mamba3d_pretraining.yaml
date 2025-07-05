@@ -17,6 +17,7 @@ model:
   backbone_type: mamba3d
   in_channels: 3
   aug: true
+  offset_scale: 1.0
 
 opt:
   iterations: 100000
