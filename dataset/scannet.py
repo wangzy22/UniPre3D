@@ -69,14 +69,16 @@ class ScanNetDataset(Dataset):
 
         # Initialize link creator for point-image correspondence
         self.link_creator = LinkCreator()
+        self.fovx = math.degrees(math.atan2(self.link_creator.intrinsic[0, 2], self.link_creator.intrinsic[0, 0])*2)
+        self.fovy = math.degrees(math.atan2(self.link_creator.intrinsic[1, 2], self.link_creator.intrinsic[1, 1])*2)
 
     def _init_projection_matrix(self):
         """Initialize the projection matrix based on configuration parameters."""
         return getProjectionMatrix(
             znear=self.cfg.data.znear,
             zfar=self.cfg.data.zfar,
-            fovX=self.cfg.data.fov * 2 * np.pi / 360,
-            fovY=self.cfg.data.fov * 2 * np.pi / 360,
+            fovX= self.fovx,
+            fovY= self.fovy,
         ).transpose(0, 1)
 
     def _init_transforms(self):
