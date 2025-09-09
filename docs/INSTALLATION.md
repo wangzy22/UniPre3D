@@ -23,6 +23,13 @@ pip install flash-attn --no-build-isolation
 # Install PointNet++ modules
 cd openpoints/cpp/pointnet2_batch
 python setup.py install
+cd ../
+
+# Install Chamfer Distance and emd modules
+cd chamfer_dist
+python setup.py install --user
+cd ../emd
+python setup.py install --user
 cd ../../../
 ```
 
