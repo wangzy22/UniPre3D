@@ -1,7 +1,7 @@
 # [CVPR 2025] UniPre3D: Unified Pre-training of 3D Point Cloud Models with Cross-Modal Gaussian Splatting
 
 
-Created by [Ziyi Wang*](https://wangzy22.github.io/), [Yanran Zhang*](https://github.com/Zhangyr2022), [Jie Zhou](https://scholar.google.com/citations?user=6a79aPwAAAAJ&hl=en&authuser=1), [Jiwen Lu](https://scholar.google.com/citations?user=TN8uDQoAAAAJ&hl=zh-CN) (* indicates equal contribution)
+Created by [Ziyi Wang*](https://wangzy22.github.io/), [Yanran Zhang*](https://yanran-zhang.github.io/), [Jie Zhou](https://scholar.google.com/citations?user=6a79aPwAAAAJ&hl=en&authuser=1), [Jiwen Lu](https://scholar.google.com/citations?user=TN8uDQoAAAAJ&hl=zh-CN) (* indicates equal contribution)
 
 This repository is an official implementation of **UniPre3D (CVPR 2025)**.
 
